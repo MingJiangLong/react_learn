@@ -53,7 +53,49 @@ function workLoop(deadline) {
  * 每个work需要有 parent son sibling
  * @param {*} nextUnitWork
  */
-function performUnitWork(nextUnitWork) {}
+function performUnitWork(fiber) {
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+
+  if (fiber.parent) {
+    fiber.parent.dom.appendChild(fiber.dom);
+  }
+
+  // 构建子元素fiber信息
+  const elements = fiber.props.children;
+  let index = 0;
+  let prevSibling = null;
+
+  // 构建fiber关系
+  while (index < elements.length) {
+    const element = elements[index];
+    const newFiber = {
+      type: element.type,
+      props: element.props,
+      parent: fiber,
+      dom: null
+    };
+    if (index === 0) {
+      fiber.child = newFiber;
+    } else {
+      prevSibling.sibling = newFiber;
+    }
+    prevSibling = newFiber;
+    index++;
+  }
+
+  // 有子元素直接返回子元素  否则寻找sibling 最后再往parent寻找
+  if (fiber.child) {
+    return fiber.child;
+  }
+  let nextFiber = fiber;
+  while (nextFiber) {
+    if (nextFiber.sibling) return nextFiber.sibling;
+    nextFiber = nextFiber.parent;
+  }
+}
+function createDom(fiber) {}
 
 const V1 = {
   render,

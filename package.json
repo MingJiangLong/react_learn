@@ -1,7 +1,7 @@
 {
   "name": "react-learn",
   "version": "1.0.0",
-  "description": "",
+  "description": "react 简单实现学习",
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {},
